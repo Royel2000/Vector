@@ -13,6 +13,8 @@ const [functions, setFunctions] = useState<FunctionData[]>([
 { expression: "Math.sin(x)", color: "red" },
 ]);
 
+const [darkMode, setDarkMode] = useState(false);
+
 const addFunction = () => {
 setFunctions((prev) => [
 ...prev,
@@ -30,9 +32,18 @@ copy[i].expression = value;
 setFunctions(copy);
 };
 
-return ( <div className="flex flex-col lg:flex-row w-full min-h-screen bg-gray-100 p-2 sm:p-4 gap-2 sm:gap-4 overflow-hidden">
-{/* Canvas 3D */} <div className="flex-1 bg-white shadow-lg rounded-lg overflow-hidden relative flex items-center justify-center">
-{/* ✅ Menor altura en modo celular */} <div className="w-full h-64 sm:aspect-[16/9] lg:h-full">
+return (
+<div
+className={`flex flex-col lg:flex-row w-full min-h-screen p-2 sm:p-4 gap-2 sm:gap-4 overflow-hidden transition-colors duration-300 ${
+        darkMode ? "bg-gray-900 text-gray-100" : "bg-gray-100 text-gray-900"
+      }`}
+>
+{/* Canvas 3D */}
+<div
+className={`flex-1 rounded-lg overflow-hidden relative flex items-center justify-center shadow-lg ${
+          darkMode ? "bg-gray-800" : "bg-white"
+        }`}
+> <div className="w-full h-64 sm:aspect-[16/9] lg:h-full">
 <Canvas camera={{ position: [10, 10, 10], fov: 50 }}> <ambientLight /> <axesHelper args={[10]} />
 <gridHelper args={[20, 20]} /> <OrbitControls />
 {functions.map((f, i) => ( <GraphLine key={i} fn={f.expression} color={f.color} />
@@ -40,10 +51,26 @@ return ( <div className="flex flex-col lg:flex-row w-full min-h-screen bg-gray-1
 
 
   {/* Panel de control */}
-  <div className="w-full lg:w-96 bg-white shadow-lg rounded-lg p-4 flex flex-col max-h-[90vh] overflow-y-auto">
-    <h2 className="text-lg sm:text-xl font-semibold text-center mb-3 sm:mb-4">
-      Calculadora Gráfica 3D
-    </h2>
+  <div
+    className={`w-full lg:w-96 rounded-lg p-4 flex flex-col max-h-[90vh] overflow-y-auto shadow-lg transition-colors duration-300 ${
+      darkMode ? "bg-gray-800 text-gray-100" : "bg-white text-gray-900"
+    }`}
+  >
+    <div className="flex justify-between items-center mb-3">
+      <h2 className="text-lg sm:text-xl font-semibold text-center flex-1">
+        Calculadora Gráfica 3D
+      </h2>
+      <button
+        onClick={() => setDarkMode(!darkMode)}
+        className={`ml-2 px-3 py-1 rounded text-sm transition-all ${
+          darkMode
+            ? "bg-yellow-400 text-black hover:bg-yellow-500"
+            : "bg-gray-800 text-white hover:bg-gray-700"
+        }`}
+      >
+        {darkMode ? "☀️ Claro" : "🌙 Oscuro"}
+      </button>
+    </div>
 
     <div className="flex flex-col gap-3">
       {functions.map((f, i) => (
@@ -56,7 +83,11 @@ return ( <div className="flex flex-col lg:flex-row w-full min-h-screen bg-gray-1
             placeholder="f(x) ="
             value={f.expression}
             onChange={(e) => updateFunction(i, e.target.value)}
-            className="w-full border rounded px-2 py-1 text-sm"
+            className={`w-full border rounded px-2 py-1 text-sm ${
+              darkMode
+                ? "bg-gray-700 border-gray-600 text-white"
+                : "bg-white border-gray-300 text-black"
+            }`}
           />
           <button
             onClick={() => removeFunction(i)}
@@ -91,7 +122,11 @@ return ( <div className="flex flex-col lg:flex-row w-full min-h-screen bg-gray-1
       ].map((b) => (
         <button
           key={b}
-          className="bg-gray-200 hover:bg-gray-300 p-2 rounded text-sm"
+          className={`p-2 rounded text-sm transition-colors ${
+            darkMode
+              ? "bg-gray-700 hover:bg-gray-600 text-white"
+              : "bg-gray-200 hover:bg-gray-300 text-black"
+          }`}
           onClick={() =>
             setFunctions((prev) => {
               const copy = [...prev];
