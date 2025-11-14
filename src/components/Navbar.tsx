@@ -4,7 +4,6 @@ const Navbar = () => {
   const [theme, setTheme] = useState<"light" | "dark">("light");
 
   useEffect(() => {
-    // Se ejecuta solo en cliente, cuando window ya existe
     const prefersDark = window.matchMedia("(prefers-color-scheme: dark)").matches;
     setTheme(prefersDark ? "dark" : "light");
   }, []);
@@ -26,15 +25,15 @@ const Navbar = () => {
 
   return (
     <div className="flex">
-      <div className="w-full py-2 top-0 backdrop-blur z-50 px-10 flex dark:bg-zinc-950 dark:text-white transition-all">
+      <div className="w-full py-2 top-0 backdrop-blur z-50 px-10 flex dark:text-white transition-all">
         <div className="w-full flex flex-row justify-between items-center px-[10px]">
           <img
-            src=""
-            className="cursor-pointer hover:animate-pulse w-[4rem] mr-6"
+            src="/vite.svg"
+            className="cursor-pointer hover:animate-pulse w-[2rem] mr-6"
             alt="Logo"
           />
           <div>
-            <h1 className="font-bold sm:text-2xl dark:bg-linear-to-r dark:from-zinc-500 dark:to-zinc-100 dark:bg-clip-text text-transparent">Calculadora</h1>
+            <h1 className="font-bold sm:text-2xl py-1 px-3 rounded-lg text-indigo-200 shadow-xl bg-indigo-950 border border-indigo-700 shadow-indigo-950">Vectores</h1>
           </div>
 
           <div>

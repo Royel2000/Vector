@@ -3,6 +3,7 @@ import { Canvas } from "@react-three/fiber";
 import { useState, useMemo } from "react";
 import * as THREE from "three";
 import Flecha from "./components/Flecha";
+import { motion, AnimatePresence } from "framer-motion";
 
 interface VectorData {
   name: string;
@@ -16,29 +17,29 @@ export default function VectorCalculator() {
   const [showIndividualVectors, setShowIndividualVectors] = useState(true);
   const [showPolygonPoints, setShowPolygonPoints] = useState(false);
 
-  // --- Construcción del polígono ---
+  // Construcción del polígono
   const polygonSegments = useMemo(() => buildPolygon(vectors), [vectors]);
 
-  // --- Crear el Shape para dibujar el área ---
+  // Shape para el área
   const polygonAreaShape = useMemo(() => {
     if (mode !== "2D") return null;
     return buildShapeFromSegments(polygonSegments);
   }, [polygonSegments, mode]);
 
-  // --- Área automática ---
+  // Cálculo del área
   const area = useMemo(() => {
     if (mode !== "2D") return null;
     return computePolygonArea(vectors);
   }, [vectors, mode]);
 
-  // --- SUMA VECTORIAL ---
+  // SUMA VECTORIAL
   const sum = vectors.reduce<[number, number, number]>(
     (acc, v) =>
       acc.map((n, i) => n + v.components[i]) as [number, number, number],
     [0, 0, 0]
   );
 
-  // --- CÁLCULO DE r Y θ SOLO PARA 2D ---
+  // SOLO EN 2D — r y θ
   const r = Math.sqrt(sum[0] * sum[0] + sum[1] * sum[1]);
   const theta = Math.atan2(sum[1], sum[0]) * (180 / Math.PI);
 
@@ -80,11 +81,77 @@ export default function VectorCalculator() {
   };
 
   return (
-    <div
-      className="flex flex-col lg:flex-row w-full min-h-screen p-4 
-                    bg-gray-100 text-gray-900 dark:bg-zinc-950"
+    <motion.div
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      className="flex flex-col lg:flex-row w-full h-screen p-4 bg-gray-100 text-gray-900 dark:bg-zinc-950"
     >
-      {/* -------- SCENE -------- */}
+      {/* PANEL INFERIOR FLOTANTE */}
+      <motion.div
+        initial={{ y: 40, opacity: 0 }}
+        animate={{ y: 0, opacity: 1 }}
+        className="absolute z-50 bottom-3"
+      >
+        <div className="flex mb-2 gap-x-2">
+          <motion.button
+            whileTap={{ scale: 0.9 }}
+            whileHover={{ scale: 1.05 }}
+            onClick={() => setShowIndividualVectors((v) => !v)}
+            className="bg-zinc-900/70 border border-zinc-800 hover:border-indigo-600 hover:shadow-lg hover:shadow-indigo-900 text-white rounded-2xl w-full py-0.5 transition-all duration-200"
+          >
+            {showIndividualVectors ? "Ocultar Vectores" : "Mostrar Vectores"}
+          </motion.button>
+
+          {mode === "2D" && (
+            <motion.button
+              whileTap={{ scale: 0.9 }}
+              whileHover={{ scale: 1.05 }}
+              onClick={() => setShowPolygonPoints((v) => !v)}
+              className="bg-zinc-900/70 border border-zinc-800 hover:border-indigo-600 hover:shadow-lg hover:shadow-indigo-900 text-white rounded-2xl w-full py-0.5 transition-all duration-200"
+            >
+              {showPolygonPoints
+                ? "Ocultar coordenadas"
+                : "Mostrar coordenadas"}
+            </motion.button>
+          )}
+        </div>
+
+        <motion.div
+          initial={{ scale: 0.8, opacity: 0 }}
+          animate={{ scale: 1, opacity: 1 }}
+          className="md:flex px-3 py-1 rounded-2xl border border-zinc-800 hover:border-indigo-900 hover:bg-indigo-950/50 justify-center text-zinc-200 bg-zinc-900/70 transition-all duration-200"
+        >
+          <h3 className="font-semibold mr-1">Vector Resultante</h3>
+          <p className=" px-1">
+            R = ({sum.map((n) => n.toFixed(2)).join(", ")})
+          </p>
+
+          {mode === "2D" && (
+            <motion.p
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              className="ml-2 text-indigo-300 px-1 rounded-lg shadow-lg bg-indigo-900/50 shadow-indigo-900 animate-pulse"
+            >
+              r = {r.toFixed(2)}, θ = {theta.toFixed(2)}°
+            </motion.p>
+          )}
+
+          {area !== null && (
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              className=" dark:text-white flex ml-5"
+            >
+              <h3 className="font-semibold">Área del polígono:</h3>
+              <p className="ml-2 text-indigo-300 px-1 rounded-lg shadow-lg bg-indigo-900/50 shadow-indigo-900 animate-pulse">
+                {area.toFixed(2)} unidades²
+              </p>
+            </motion.div>
+          )}
+        </motion.div>
+      </motion.div>
+
+      {/* SCENE */}
       <div className="flex-1 rounded-lg overflow-hidden shadow-lg">
         <Canvas
           camera={{
@@ -99,14 +166,12 @@ export default function VectorCalculator() {
 
           <OrbitControls enableRotate />
 
-          {/* Rotación para modo 2D */}
-          <group rotation={mode === "2D" ? [Math.PI / 2, 0, 0] : [0, 0, 0]}>
-            {/* --- ÁREA DEL POLÍGONO (Relleno gris) --- */}
+          <group rotation={mode === "2D" ? [2, 0, 0] : [0, 0, 0]}>
             {mode === "2D" && polygonAreaShape && (
               <mesh>
                 <shapeGeometry args={[polygonAreaShape]} />
                 <meshBasicMaterial
-                  color="gray"
+                  color="blue"
                   transparent
                   opacity={0.3}
                   side={THREE.DoubleSide}
@@ -114,16 +179,19 @@ export default function VectorCalculator() {
               </mesh>
             )}
 
-            {/* --- ETIQUETA AREA --- */}
             {area !== null && (
               <Html position={[0, 0, 0]}>
-                <div className="text-white text-xs bg-black/60 px-2 py-1 rounded">
+                <motion.div
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                  className="text-white text-xs w-24 bg-black/60 px-2 py-1 rounded"
+                >
                   Área = {area.toFixed(2)} u²
-                </div>
+                </motion.div>
               </Html>
             )}
 
-            {/* Vectores individuales */}
+            {/* FLECHAS */}
             {showIndividualVectors &&
               vectors.map((v, i) => (
                 <Flecha
@@ -134,7 +202,6 @@ export default function VectorCalculator() {
                 />
               ))}
 
-            {/* Polígono método del polígono */}
             {polygonSegments.map((seg, i) => (
               <group key={i}>
                 <Flecha from={seg.from} to={seg.to} color="grey" />
@@ -161,122 +228,119 @@ export default function VectorCalculator() {
         </Canvas>
       </div>
 
-      {/* -------- PANEL -------- */}
-      <div className="w-full lg:w-96 bg-white dark:bg-zinc-900 rounded-lg shadow-lg p-4 mt-4 lg:mt-0 lg:ml-4">
-        <h2 className="text-xl mb-3 font-bold dark:text-white">
-          Calculadora de Vectores 3D
-        </h2>
+      {/* PANEL DE CONTROLES */}
+      <div className="absolute mt-4 w-full lg:w-96">
+        <label className="font-semibold dark:text-zinc-300">
+          Dimensiones:{" "}
+        </label>
 
-        <button
-          onClick={() => setShowIndividualVectors((v) => !v)}
-          className="bg-blue-600 text-white px-3 py-2 rounded w-full mb-3"
-        >
-          {showIndividualVectors ? "Ocultar vectores" : "Mostrar vectores"}
-        </button>
-
-        {mode === "2D" && (
-          <button
-            onClick={() => setShowPolygonPoints((v) => !v)}
-            className="bg-purple-600 text-white px-3 py-2 rounded w-full mb-4"
-          >
-            {showPolygonPoints ? "Ocultar coordenadas" : "Mostrar coordenadas"}
-          </button>
-        )}
-
-        <label className="font-semibold dark:text-zinc-300">Dimensiones:</label>
-        <select
+        <motion.select
+          whileHover={{ scale: 1.02 }}
+          whileTap={{ scale: 0.95 }}
           value={mode}
           onChange={(e) => setMode(e.target.value as "2D" | "3D")}
-          className="w-full mb-4 border rounded px-2 py-1 dark:bg-zinc-800 dark:text-white dark:border-zinc-700"
+          className="mb-3 ml-2 border w-1/2 rounded-2xl px-2 dark:bg-zinc-900 dark:text-white dark:border-zinc-800 py-1.5 pr-8 pl-3 text-base"
         >
           <option value="3D">3D (x, y, z)</option>
           <option value="2D">2D (magnitud, ángulo)</option>
-        </select>
+        </motion.select>
 
-        {/* Inputs */}
-        {vectors.map((v, i) =>
-          mode === "3D" ? (
-            <div key={i} className="flex gap-2 items-center mb-2">
-              {v.components.map((c, j) => (
-                <input
-                  key={j}
+        {/* INPUTS */}
+        <AnimatePresence>
+          {vectors.map((v, i) =>
+            mode === "3D" ? (
+              <motion.div
+                key={i}
+                initial={{ opacity: 0, x: 30 }}
+                animate={{ opacity: 1, x: 0 }}
+                exit={{ opacity: 0, x: -30 }}
+                transition={{ type: "spring", stiffness: 200, damping: 20 }}
+                className="flex gap-2 items-center mb-2"
+              >
+                {v.components.map((c, j) => (
+                  <motion.input
+                    whileFocus={{ scale: 1.05 }}
+                    key={j}
+                    type="number"
+                    value={c}
+                    onChange={(e) =>
+                      updateComponent(i, j, parseFloat(e.target.value) || 0)
+                    }
+                    className="w-1/4 border rounded-lg px-1 py-1 text-center 
+             dark:bg-zinc-800 dark:text-white dark:border-zinc-700
+             focus:outline-1 focus:outline-indigo-500 hover:outline-1 hover:outline-indigo-800 hover:shadow-lg hover:shadow-indigo-900 transition-all duration-300"
+                  />
+                ))}
+
+                <motion.button
+                  whileHover={{ scale: 1.1 }}
+                  whileTap={{ scale: 0.9 }}
+                  onClick={() => removeVector(i)}
+                  className="dark:bg-zinc-900 border dark:border-zinc-800 hover:bg-red-900 hover:outline-1 hover:outline-red-800 hover:shadow-lg hover:shadow-red-900 text-white rounded-lg px-2 py-1"
+                >
+                  ✕
+                </motion.button>
+              </motion.div>
+            ) : (
+              <motion.div
+                key={i}
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: -20 }}
+                transition={{ type: "spring", stiffness: 200, damping: 20 }}
+                className="flex gap-2 items-center mb-2"
+              >
+                <motion.input
+                  whileFocus={{ scale: 1.05 }}
                   type="number"
-                  value={c}
+                  placeholder="r"
                   onChange={(e) =>
-                    updateComponent(i, j, parseFloat(e.target.value) || 0)
+                    updatePolar(i, "r", parseFloat(e.target.value) || 0)
                   }
-                  className="w-1/3 border rounded px-1 py-1 text-center 
-                            dark:bg-zinc-800 dark:text-white dark:border-zinc-700"
+                  className="w-1/2 border rounded px-1 py-1 text-center 
+             dark:bg-zinc-800 dark:text-white dark:border-zinc-700
+             focus:outline focus:outline-indigo-500 hover:outline-1 hover:outline-indigo-800 hover:shadow-lg hover:shadow-indigo-900 transition-all duration-300"
                 />
-              ))}
-              <button
-                onClick={() => removeVector(i)}
-                className="bg-red-500 text-white rounded px-2 py-1"
-              >
-                ✕
-              </button>
-            </div>
-          ) : (
-            <div key={i} className="flex gap-2 items-center mb-2">
-              <input
-                type="number"
-                placeholder="r"
-                onChange={(e) =>
-                  updatePolar(i, "r", parseFloat(e.target.value) || 0)
-                }
-                className="w-1/2 border rounded px-1 py-1 text-center 
-                          dark:bg-zinc-800 dark:text-white dark:border-zinc-700"
-              />
-              <input
-                type="number"
-                placeholder="θ°"
-                onChange={(e) =>
-                  updatePolar(i, "theta", parseFloat(e.target.value) || 0)
-                }
-                className="w-1/2 border rounded px-1 py-1 text-center 
-                          dark:bg-zinc-800 dark:text-white dark:border-zinc-700"
-              />
-              <button
-                onClick={() => removeVector(i)}
-                className="bg-red-500 text-white rounded px-2 py-1"
-              >
-                ✕
-              </button>
-            </div>
-          )
-        )}
+                <motion.input
+                  whileFocus={{ scale: 1.05 }}
+                  type="number"
+                  placeholder="θ°"
+                  onChange={(e) =>
+                    updatePolar(i, "theta", parseFloat(e.target.value) || 0)
+                  }
+                  className="w-1/2 border rounded px-1 py-1 text-center 
+             dark:bg-zinc-800 dark:text-white dark:border-zinc-700
+             focus:outline focus:outline-indigo-500 hover:outline-1 hover:outline-indigo-800 hover:shadow-lg hover:shadow-indigo-900 transition-all duration-300"
+                />
 
-        <button
+                <motion.button
+                  whileTap={{ scale: 0.9 }}
+                  whileHover={{ scale: 1.1 }}
+                  onClick={() => removeVector(i)}
+                  className="dark:bg-zinc-900 border dark:border-zinc-800 text-white rounded-2xl px-2 py-1"
+                >
+                  ✕
+                </motion.button>
+              </motion.div>
+            )
+          )}
+        </AnimatePresence>
+
+        {/* BOTÓN AÑADIR VECTOR */}
+        <motion.button
+          whileTap={{ scale: 0.9 }}
+          whileHover={{ scale: 1.05 }}
           onClick={addVector}
-          className="bg-emerald-500 text-white px-3 py-2 rounded w-full mt-2"
+          className="bg-zinc-900 border border-zinc-800 hover:bg-indigo-950 hover:border-indigo-600 hover:shadow-lg hover:shadow-indigo-900 text-white px-3 py-2 rounded-2xl mt-2"
         >
           Añadir vector
-        </button>
-
-        <div className="mt-4 dark:text-zinc-300">
-          <h3 className="font-semibold mb-1">Vector Resultante</h3>
-
-          <p>R = ({sum.map((n) => n.toFixed(2)).join(", ")})</p>
-
-          {mode === "2D" && (
-            <p>
-              r = {r.toFixed(2)}, θ = {theta.toFixed(2)}°
-            </p>
-          )}
-        </div>
-
-        {area !== null && (
-          <div className="mt-3 dark:text-zinc-300">
-            <h3 className="font-semibold">Área del polígono:</h3>
-            <p>{area.toFixed(2)} unidades²</p>
-          </div>
-        )}
+        </motion.button>
       </div>
-    </div>
+    </motion.div>
   );
 }
 
-/* ---------------------- UTILIDADES ---------------------- */
+// ───────────────────────────── UTILIDADES ───────────────────────────────
 
 function buildPolygon(vectors: VectorData[]) {
   const segments: {
@@ -304,15 +368,11 @@ function buildShapeFromSegments(segments: ReturnType<typeof buildPolygon>) {
   if (segments.length < 2) return null;
 
   const shape = new THREE.Shape();
-
   const first = segments[0].from;
+
   shape.moveTo(first[0], first[1]);
-
-  segments.forEach((seg) => {
-    shape.lineTo(seg.to[0], seg.to[1]);
-  });
-
-  shape.lineTo(first[0], first[1]); // cerrar
+  segments.forEach((seg) => shape.lineTo(seg.to[0], seg.to[1]));
+  shape.lineTo(first[0], first[1]);
 
   return shape;
 }
@@ -347,6 +407,6 @@ function computePolygonArea(vectors: VectorData[]) {
 }
 
 function getRandomColor() {
-  const colors = ["blue", "orange", "purple", "cyan", "magenta"];
+  const colors = ["blue", "purple", "magenta"];
   return colors[Math.floor(Math.random() * colors.length)];
 }
