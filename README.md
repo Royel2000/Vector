@@ -1,73 +1,71 @@
-# React + TypeScript + Vite
+<p align="center">
+  <img width="354" height="229" alt="VEC" src="https://github.com/user-attachments/assets/744ddf71-5853-4b1c-8309-edb973754677" />
+</p>
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+<div align="center">
+  <a href="#-instalación"><kbd>📦 Instalación</kbd></a> &nbsp;|&nbsp;
+  <a href="#-acerca-de"><kbd>📖 Acerca de</kbd></a> &nbsp;|&nbsp;
+  <a href="#-tecnologías"><kbd>🛠️ Tecnologías</kbd></a>
+</div>
 
-Currently, two official plugins are available:
+---
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) (or [oxc](https://oxc.rs) when used in [rolldown-vite](https://vite.dev/guide/rolldown)) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+### 📖 Acerca de
 
-## React Compiler
+**Vectors** es una aplicación web que permite calcular la resultante de un vector por el metodo del poligono.
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+#### Características principales:
 
-## Expanding the ESLint configuration
+- ✅ Clasificación temática:
+  - Antiguo Testamento
+  - Nuevo Testamento
+  - Nivel experto
 
-If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
+---
 
-```js
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
+### 📦 Instalación
 
-      // Remove tseslint.configs.recommended and replace with this
-      tseslint.configs.recommendedTypeChecked,
-      // Alternatively, use this for stricter rules
-      tseslint.configs.strictTypeChecked,
-      // Optionally, add this for stylistic rules
-      tseslint.configs.stylisticTypeChecked,
+#### Clona el repositorio:
 
-      // Other configs...
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
+```bash
+git clone --depth=1 https://github.com/Royel2000/Vector.git
+cd Vector
 ```
 
-You can also install [eslint-plugin-react-x](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-dom) for React-specific lint rules:
-
-```js
-// eslint.config.js
-import reactX from 'eslint-plugin-react-x'
-import reactDom from 'eslint-plugin-react-dom'
-
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-      // Enable lint rules for React
-      reactX.configs['recommended-typescript'],
-      // Enable lint rules for React DOM
-      reactDom.configs.recommended,
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
+Instala las dependencias:
+```bash
+npm install
 ```
+
+Ejecuta el proyecto en desarrollo:
+
+```bash
+npm run dev
+```
+    ⚠️ Asegúrate de tener Node.js ≥ 16 instalado.
+
+### 🛠️ Tecnologías
+
+Este proyecto fue construido con:
+
+- ⚛️ React
+- 🌀 Tailwind CSS
+- 🎬 Framer Motion
+- ⚡ Vite como bundler ultrarrápido
+
+### 📸 Capturas
+
+<img width="1309" height="977" alt="imagen" src="https://github.com/user-attachments/assets/49d703c9-2e70-4c62-80b9-1bf985b1f38e" />
+
+<img width="1560" height="1003" alt="imagen" src="https://github.com/user-attachments/assets/440bff2d-2ae6-4d34-8c0a-81c63b4402e9" />
+
+
+### 🙋‍♂️ Autor
+
+Desarrollado con ❤️ por @Royel2000
+
+### 📜 Licencia
+
+
+## Tareas por hacer
+- [ ] Construir aplicación de escritorio
