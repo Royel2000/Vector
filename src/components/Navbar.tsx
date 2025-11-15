@@ -32,11 +32,11 @@ const Navbar = () => {
             className="cursor-pointer hover:animate-pulse w-[2rem] mr-6"
             alt="Logo"
           />
-          <div>
+         { /*<div>
             <h1 className="font-bold sm:text-2xl py-1 px-3 rounded-lg text-indigo-200 shadow-xl bg-indigo-950 border border-indigo-700 shadow-indigo-950">Vectores</h1>
           </div>
 
-          <div>
+          {/* <div>
             <button
               onClick={handleChangeTheme}
               className="dark:bg-opacity-30 dark:bg-zinc-600 p-1 bg-zinc-300 rounded-full transition-all"
@@ -67,7 +67,7 @@ const Navbar = () => {
                 </svg>
               )}
             </button>
-          </div>
+          </div> */}
         </div>
       </div>
     </div>

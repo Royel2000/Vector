@@ -16,7 +16,7 @@ export default function VectorCalculator() {
   const [vectors, setVectors] = useState<VectorData[]>([]);
   const [showIndividualVectors, setShowIndividualVectors] = useState(true);
   const [showPolygonPoints, setShowPolygonPoints] = useState(false);
-
+  
   // NUEVO: estado para la ventana de ayuda
   const [helpOpen, setHelpOpen] = useState(false);
 
