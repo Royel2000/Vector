@@ -17,6 +17,9 @@ export default function VectorCalculator() {
   const [showIndividualVectors, setShowIndividualVectors] = useState(true);
   const [showPolygonPoints, setShowPolygonPoints] = useState(false);
 
+  // NUEVO: estado para la ventana de ayuda
+  const [helpOpen, setHelpOpen] = useState(false);
+
   // Construcción del polígono
   const polygonSegments = useMemo(() => buildPolygon(vectors), [vectors]);
 
@@ -86,6 +89,19 @@ export default function VectorCalculator() {
       animate={{ opacity: 1 }}
       className="flex flex-col lg:flex-row w-full h-screen p-4 bg-gray-100 text-gray-900 dark:bg-zinc-950"
     >
+      {/* BOTÓN DE AYUDA (no elimina nada, solo añade) */}
+      {/* Asumo que el botón del sol (modo oscuro) está en la esquina superior derecha.
+          Este botón ? queda pegado a la izquierda del botón del sol (ajusta right si necesitas) */}
+      <button
+        onClick={() => setHelpOpen((s) => !s)}
+        aria-label="Abrir ayuda"
+        className="absolute top-3 right-25 z-50 text-xl bg-indigo-600 hover:bg-indigo-800 text-white w-10 h-10 rounded-full shadow-lg flex items-center justify-center"
+      >
+        ?
+      </button>
+
+      {/* Nota: el botón del sol debe estar en `right-4` o similar para quedar al lado del ? */}
+
       {/* PANEL INFERIOR FLOTANTE */}
       <motion.div
         initial={{ y: 40, opacity: 0 }}
@@ -109,9 +125,7 @@ export default function VectorCalculator() {
               onClick={() => setShowPolygonPoints((v) => !v)}
               className="bg-zinc-900/70 border border-zinc-800 hover:border-indigo-600 hover:shadow-lg hover:shadow-indigo-900 text-white rounded-2xl w-full py-0.5 transition-all duration-200"
             >
-              {showPolygonPoints
-                ? "Ocultar coordenadas"
-                : "Mostrar coordenadas"}
+              {showPolygonPoints ? "Ocultar coordenadas" : "Mostrar coordenadas"}
             </motion.button>
           )}
         </div>
@@ -122,9 +136,7 @@ export default function VectorCalculator() {
           className="md:flex px-3 py-1 rounded-2xl border border-zinc-800 hover:border-indigo-900 hover:bg-indigo-950/50 justify-center text-zinc-200 bg-zinc-900/70 transition-all duration-200"
         >
           <h3 className="font-semibold mr-1">Vector Resultante</h3>
-          <p className=" px-1">
-            R = ({sum.map((n) => n.toFixed(2)).join(", ")})
-          </p>
+          <p className=" px-1">R = ({sum.map((n) => n.toFixed(2)).join(", ")})</p>
 
           {mode === "2D" && (
             <motion.p
@@ -194,12 +206,7 @@ export default function VectorCalculator() {
             {/* FLECHAS */}
             {showIndividualVectors &&
               vectors.map((v, i) => (
-                <Flecha
-                  key={i}
-                  from={[0, 0, 0]}
-                  to={v.components}
-                  color={v.color}
-                />
+                <Flecha key={i} from={[0, 0, 0]} to={v.components} color={v.color} />
               ))}
 
             {polygonSegments.map((seg, i) => (
@@ -230,9 +237,7 @@ export default function VectorCalculator() {
 
       {/* PANEL DE CONTROLES */}
       <div className="absolute mt-4 w-full lg:w-96">
-        <label className="font-semibold dark:text-zinc-300">
-          Dimensiones:{" "}
-        </label>
+        <label className="font-semibold dark:text-zinc-300">Dimensiones: {" "}</label>
 
         <motion.select
           whileHover={{ scale: 1.02 }}
@@ -294,9 +299,7 @@ export default function VectorCalculator() {
                   whileFocus={{ scale: 1.05 }}
                   type="number"
                   placeholder="r"
-                  onChange={(e) =>
-                    updatePolar(i, "r", parseFloat(e.target.value) || 0)
-                  }
+                  onChange={(e) => updatePolar(i, "r", parseFloat(e.target.value) || 0)}
                   className="w-1/2 border rounded px-1 py-1 text-center 
              dark:bg-zinc-800 dark:text-white dark:border-zinc-700
              focus:outline focus:outline-indigo-500 hover:outline-1 hover:outline-indigo-800 hover:shadow-lg hover:shadow-indigo-900 transition-all duration-300"
@@ -305,9 +308,7 @@ export default function VectorCalculator() {
                   whileFocus={{ scale: 1.05 }}
                   type="number"
                   placeholder="θ°"
-                  onChange={(e) =>
-                    updatePolar(i, "theta", parseFloat(e.target.value) || 0)
-                  }
+                  onChange={(e) => updatePolar(i, "theta", parseFloat(e.target.value) || 0)}
                   className="w-1/2 border rounded px-1 py-1 text-center 
              dark:bg-zinc-800 dark:text-white dark:border-zinc-700
              focus:outline focus:outline-indigo-500 hover:outline-1 hover:outline-indigo-800 hover:shadow-lg hover:shadow-indigo-900 transition-all duration-300"
@@ -336,6 +337,69 @@ export default function VectorCalculator() {
           Añadir vector
         </motion.button>
       </div>
+
+      {/* PANEL DE AYUDA (panel anclado near top-right, ya no cubre toda la pantalla) */}
+      <AnimatePresence>
+        {helpOpen && (
+          <motion.div
+            key="help-panel"
+            initial={{ opacity: 0, y: -6 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -6 }}
+            className="absolute top-16 right-4 z-50"
+          >
+            <motion.div
+              initial={{ scale: 0.95, opacity: 0 }}
+              animate={{ scale: 1, opacity: 1 }}
+              exit={{ scale: 0.95, opacity: 0 }}
+              className="w-80 bg-white dark:bg-zinc-900 text-black dark:text-white p-4 rounded-2xl shadow-2xl"
+            >
+              <div className="flex justify-between items-center mb-3">
+                <h2 className="text-lg font-bold">Manual de uso</h2>
+                <button
+                  onClick={() => setHelpOpen(false)}
+                  className="px-2 py-1 rounded-md bg-zinc-200 dark:bg-zinc-800 text-sm"
+                >
+                  Cerrar
+                </button>
+              </div>
+
+              <div className="space-y-3 text-sm">
+                <div>
+                  <h3 className="font-semibold text-indigo-600">Dimensiones</h3>
+                  <p>Selecciona 2D para usar r/θ o 3D para editar x, y, z.</p>
+                </div>
+
+                <div>
+                  <h3 className="font-semibold text-indigo-600">Añadir vector</h3>
+                  <p>Pulsa "Añadir vector" para agregar un nuevo vector editable.</p>
+                </div>
+
+                <div>
+                  <h3 className="font-semibold text-indigo-600">Editar componentes</h3>
+                  <p>
+                    Cambia los valores en los inputs (x,y,z) para modificar cada vector.
+                  </p>
+                </div>
+
+                <div>
+                  <h3 className="font-semibold text-indigo-600">Visualización</h3>
+                  <p>
+                    El Canvas muestra las flechas de cada vector y la resultante en rojo.
+                  </p>
+                </div>
+
+                <div>
+                  <h3 className="font-semibold text-indigo-600">Panel inferior</h3>
+                  <p>
+                    Usa los botones inferiores para mostrar/ocultar vectores o coordenadas.
+                  </p>
+                </div>
+              </div>
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
     </motion.div>
   );
 }
