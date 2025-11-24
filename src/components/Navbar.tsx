@@ -3,46 +3,59 @@ import { useState, useEffect } from "react";
 const Navbar = () => {
   const [theme, setTheme] = useState<"light" | "dark">("light");
 
+  // Cargar el tema al iniciar
   useEffect(() => {
-    const prefersDark = window.matchMedia("(prefers-color-scheme: dark)").matches;
-    setTheme(prefersDark ? "dark" : "light");
+    const savedTheme = localStorage.getItem("theme");
+
+    if (savedTheme === "light" || savedTheme === "dark") {
+      setTheme(savedTheme as "light" | "dark");
+    } else {
+      const systemPrefersDark = window.matchMedia("(prefers-color-scheme: dark)").matches;
+      setTheme(systemPrefersDark ? "dark" : "light");
+    }
   }, []);
 
+  // Aplicar el tema al HTML
   useEffect(() => {
-    const html = document.querySelector("html");
-    if (!html) return;
+    const html = document.documentElement;
 
     if (theme === "dark") {
       html.classList.add("dark");
     } else {
       html.classList.remove("dark");
     }
+
+    // Guardar preferencia manual
+    localStorage.setItem("theme", theme);
   }, [theme]);
 
-  const handleChangeTheme = () => {
-    setTheme((prev) => (prev === "light" ? "dark" : "light"));
+  const toggleTheme = () => {
+    setTheme((t) => (t === "dark" ? "light" : "dark"));
   };
 
   return (
     <div className="flex">
       <div className="w-full py-2 top-0 backdrop-blur z-50 px-10 flex dark:text-white transition-all">
         <div className="w-full flex flex-row justify-between items-center px-[10px]">
+
           <img
             src="/vite.svg"
             className="cursor-pointer hover:animate-pulse w-[2rem] mr-6"
             alt="Logo"
           />
-         { /*<div>
-            <h1 className="font-bold sm:text-2xl py-1 px-3 rounded-lg text-indigo-200 shadow-xl bg-indigo-950 border border-indigo-700 shadow-indigo-950">Vectores</h1>
+
+          <div>
+            <h1 className="font-bold sm:text-2xl py-1 px-3 rounded-lg text-indigo-200 shadow-xl bg-indigo-950 border border-indigo-700 shadow-indigo-950">
+              Vectores
+            </h1>
           </div>
 
-          {/* <div>
+          <div>
             <button
-              onClick={handleChangeTheme}
+              onClick={toggleTheme}
               className="dark:bg-opacity-30 dark:bg-zinc-600 p-1 bg-zinc-300 rounded-full transition-all"
             >
               {theme === "light" ? (
-                // 🌙 Modo claro → cambia a oscuro
                 <svg
                   xmlns="http://www.w3.org/2000/svg"
                   viewBox="0 0 24 24"
@@ -56,7 +69,6 @@ const Navbar = () => {
                   />
                 </svg>
               ) : (
-                // ☀️ Modo oscuro → cambia a claro
                 <svg
                   xmlns="http://www.w3.org/2000/svg"
                   viewBox="0 0 24 24"
@@ -67,7 +79,7 @@ const Navbar = () => {
                 </svg>
               )}
             </button>
-          </div> */}
+          </div>
         </div>
       </div>
     </div>
