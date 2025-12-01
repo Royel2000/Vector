@@ -21,7 +21,7 @@ function App() {
         <SplashScreen />
       ) : (
         <div className="dark:bg-zinc-950 min-h-screen">
-          <Navbar />
+        <Navbar />
           <div>
             <GraphingCalculator />
           </div>

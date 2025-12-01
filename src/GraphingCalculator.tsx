@@ -244,7 +244,7 @@ export default function VectorCalculator() {
 
           <OrbitControls enableRotate={mode == "3D"} />
 
-          <group rotation={mode === "2D" ? [2, 0, 0] : [0, 0, 0]}>
+          <group rotation={mode === "2D" ? [0, 0, 0] : [0, 0, 0]}>
             {mode === "2D" && polygonAreaShape && (
               <mesh>
                 <shapeGeometry args={[polygonAreaShape]} />
@@ -313,11 +313,10 @@ export default function VectorCalculator() {
         </label>
 
         <motion.select
-          whileHover={{ scale: 1.02 }}
           whileTap={{ scale: 0.95 }}
           value={mode}
           onChange={(e) => setMode(e.target.value as "2D" | "3D")}
-          className="mb-3 ml-2 hover:border hover:border-indigo-600 w-1/2 rounded-2xl px-2 dark:bg-zinc-900 dark:text-white dark:border-zinc-800 py-1.5 pr-8 pl-3 text-base"
+          className="mb-3 ml-2 border hover:border-indigo-600 w-1/2 bg-zinc-900  border-zinc-800"
         >
           <option value="3D">3D (x, y, z)</option>
           <option value="2D">2D (magnitud, ángulo)</option>
@@ -383,36 +382,6 @@ export default function VectorCalculator() {
                 >
                   ✕
                 </motion.button>
-                <AnimatePresence>
-                  {helpOpen && (
-                    <motion.div
-                      key="help-panel"
-                      initial={{ opacity: 0, y: -6 }}
-                      animate={{ opacity: 1, y: 0 }}
-                      exit={{ opacity: 0, y: -6 }}
-                      className="absolute md:translate-x-96 z-50"
-                    >
-                      <motion.div
-                        initial={{ scale: 0.95, opacity: 0 }}
-                        animate={{ scale: 1, opacity: 1 }}
-                        exit={{ scale: 0.95, opacity: 0 }}
-                        className="w-80 bg-white dark:bg-zinc-900 text-black dark:text-white p-4 rounded-2xl shadow-2xl"
-                      >
-                        <div className="space-y-3 text-sm">
-                          <div>
-                            <h3 className="font-semibold text-indigo-600">
-                              Vectores
-                            </h3>
-                            <p>
-                              Los vectores usan los ejes x(rojo), y(verde),
-                              z(azul)
-                            </p>
-                          </div>
-                        </div>
-                      </motion.div>
-                    </motion.div>
-                  )}
-                </AnimatePresence>
               </motion.div>
             ) : (
               <motion.div
@@ -454,36 +423,6 @@ export default function VectorCalculator() {
                 >
                   ✕
                 </motion.button>
-                <AnimatePresence>
-                  {helpOpen && (
-                    <motion.div
-                      key="help-panel"
-                      initial={{ opacity: 0, y: -6 }}
-                      animate={{ opacity: 1, y: 0 }}
-                      exit={{ opacity: 0, y: -6 }}
-                      className="absolute md:translate-x-96 mt-2 z-50"
-                    >
-                      <motion.div
-                        initial={{ scale: 0.95, opacity: 0 }}
-                        animate={{ scale: 1, opacity: 1 }}
-                        exit={{ scale: 0.95, opacity: 0 }}
-                        className="w-80 bg-white dark:bg-zinc-900 text-black dark:text-white p-4 rounded-2xl shadow-2xl"
-                      >
-                        <div className="space-y-3 text-sm">
-                          <div>
-                            <h3 className="font-semibold text-indigo-600">
-                              Vectores
-                            </h3>
-                            <p>
-                              Los vectores se representan por longitud y su
-                              angulo
-                            </p>
-                          </div>
-                        </div>
-                      </motion.div>
-                    </motion.div>
-                  )}
-                </AnimatePresence>
               </motion.div>
             )
           )}

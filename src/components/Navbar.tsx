@@ -30,13 +30,13 @@ const Navbar = () => {
 
   return (
     <div className="flex">
-      <div className="w-full py-2 top-0 backdrop-blur z-50 px-10 flex dark:text-white transition-all">
-        <div className="w-full flex flex-row justify-between items-center px-[10px]">
-          <img
+      <div className="w-full py-2 top-0 z-50 px-10 flex dark:text-white transition-all">
+        <div className="w-full flex flex-row justify-between items-center">
+          {/* <img
             src="/vite.svg"
-            className="cursor-pointer hover:animate-pulse w-[2rem] mr-6"
+            className="cursor-pointer hover:animate-pulse mr-6"
             alt="Logo"
-          />
+          /> */}
 
           <h1 className="font-bold sm:text-2xl py-1 px-3 rounded-lg text-indigo-200 shadow-xl bg-indigo-950 border border-indigo-700 shadow-indigo-950">
             Vectores
