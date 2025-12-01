@@ -12,10 +12,13 @@ interface VectorData {
 }
 
 export default function VectorCalculator() {
-  const [mode, setMode] = useState<"2D" | "3D">("3D");
+  const [mode, setMode] = useState<"3D" | "2D">("2D");
   const [vectors, setVectors] = useState<VectorData[]>([]);
   const [showIndividualVectors, setShowIndividualVectors] = useState(true);
   const [showPolygonPoints, setShowPolygonPoints] = useState(false);
+
+  // NUEVO: estado para la ventana de ayuda
+  const [helpOpen, setHelpOpen] = useState(false);
 
   // Construcción del polígono
   const polygonSegments = useMemo(() => buildPolygon(vectors), [vectors]);
@@ -86,6 +89,19 @@ export default function VectorCalculator() {
       animate={{ opacity: 1 }}
       className="flex flex-col lg:flex-row w-full h-screen p-4 bg-gray-100 text-gray-900 dark:bg-zinc-950"
     >
+      {/* BOTÓN DE AYUDA (no elimina nada, solo añade) */}
+      {/* Asumo que el botón del sol (modo oscuro) está en la esquina superior derecha.
+          Este botón ? queda pegado a la izquierda del botón del sol (ajusta right si necesitas) */}
+      <button
+        onClick={() => setHelpOpen((s) => !s)}
+        aria-label="Abrir ayuda"
+        className="absolute top-3 right-25 z-50 text-xl bg-indigo-600 hover:bg-indigo-800 text-white w-10 h-10 rounded-full shadow-lg flex items-center justify-center"
+      >
+        ?
+      </button>
+
+      {/* Nota: el botón del sol debe estar en `right-4` o similar para quedar al lado del ? */}
+
       {/* PANEL INFERIOR FLOTANTE */}
       <motion.div
         initial={{ y: 40, opacity: 0 }}
@@ -93,21 +109,83 @@ export default function VectorCalculator() {
         className="absolute z-50 bottom-3"
       >
         <div className="flex mb-2 gap-x-2">
+          <AnimatePresence>
+            {helpOpen && (
+              <motion.div
+                key="help-panel"
+                initial={{ opacity: 0, y: -6 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: -6 }}
+                className="absolute -translate-y-32 z-50"
+              >
+                <motion.div
+                  initial={{ scale: 0.95, opacity: 0 }}
+                  animate={{ scale: 1, opacity: 1 }}
+                  exit={{ scale: 0.95, opacity: 0 }}
+                  className="w-80 bg-white dark:bg-zinc-900 text-black dark:text-white p-4 rounded-2xl shadow-2xl"
+                >
+                  <div className="space-y-3 text-sm">
+                    <div>
+                      <h3 className="font-semibold text-indigo-600">
+                        Ocultar vectores
+                      </h3>
+                      <p>
+                        Esconde los vectores que estan en forma polar y deja
+                        solo a los del método del polígono
+                      </p>
+                    </div>
+                  </div>
+                </motion.div>
+              </motion.div>
+            )}
+          </AnimatePresence>
+
           <motion.button
             whileTap={{ scale: 0.9 }}
             whileHover={{ scale: 1.05 }}
             onClick={() => setShowIndividualVectors((v) => !v)}
-            className="bg-zinc-900/70 border border-zinc-800 hover:border-indigo-600 hover:shadow-lg hover:shadow-indigo-900 text-white rounded-2xl w-full py-0.5 transition-all duration-200"
+            className="bg-zinc-200 dark:bg-zinc-900/70 dark:border dark:border-zinc-800 hover:border-indigo-600 hover:shadow-lg hover:shadow-indigo-900 dark:text-white rounded-2xl w-full py-0.5 transition-all duration-200"
           >
             {showIndividualVectors ? "Ocultar Vectores" : "Mostrar Vectores"}
           </motion.button>
+
+          <AnimatePresence>
+            {helpOpen && (
+              <motion.div
+                key="help-panel"
+                initial={{ opacity: 0, y: -6 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: -6 }}
+                className="absolute md:-translate-y-28 md:translate-x-96 z-50"
+              >
+                <motion.div
+                  initial={{ scale: 0.95, opacity: 0 }}
+                  animate={{ scale: 1, opacity: 1 }}
+                  exit={{ scale: 0.95, opacity: 0 }}
+                  className="w-80 bg-white dark:bg-zinc-900 text-black dark:text-white p-4 rounded-2xl shadow-2xl"
+                >
+                  <div className="space-y-3 text-sm">
+                    <div>
+                      <h3 className="font-semibold text-indigo-600">
+                        Mostrar coordenadas
+                      </h3>
+                      <p>
+                        Muestra las coordenadas de cada punto graficado en el
+                        plano cartesiano
+                      </p>
+                    </div>
+                  </div>
+                </motion.div>
+              </motion.div>
+            )}
+          </AnimatePresence>
 
           {mode === "2D" && (
             <motion.button
               whileTap={{ scale: 0.9 }}
               whileHover={{ scale: 1.05 }}
               onClick={() => setShowPolygonPoints((v) => !v)}
-              className="bg-zinc-900/70 border border-zinc-800 hover:border-indigo-600 hover:shadow-lg hover:shadow-indigo-900 text-white rounded-2xl w-full py-0.5 transition-all duration-200"
+              className="bg-zinc-200 dark:bg-zinc-900/70 dark:border dark:border-zinc-800 hover:border-indigo-600 hover:shadow-lg hover:shadow-indigo-900 dark:text-white rounded-2xl w-full py-0.5 transition-all duration-200"
             >
               {showPolygonPoints
                 ? "Ocultar coordenadas"
@@ -119,7 +197,7 @@ export default function VectorCalculator() {
         <motion.div
           initial={{ scale: 0.8, opacity: 0 }}
           animate={{ scale: 1, opacity: 1 }}
-          className="md:flex px-3 py-1 rounded-2xl border border-zinc-800 hover:border-indigo-900 hover:bg-indigo-950/50 justify-center text-zinc-200 bg-zinc-900/70 transition-all duration-200"
+          className="md:flex px-3 py-1 rounded-2xl dark:border dark:border-zinc-800 dark:hover:border-indigo-900 dark:hover:bg-indigo-950/50 justify-center dark:text-zinc-200 dark:bg-zinc-900/70 transition-all duration-200"
         >
           <h3 className="font-semibold mr-1">Vector Resultante</h3>
           <p className=" px-1">
@@ -162,11 +240,11 @@ export default function VectorCalculator() {
         >
           <ambientLight intensity={1} />
           {mode === "3D" && <gridHelper args={[100, 40]} />}
-          <axesHelper args={[50]} />
+          <axesHelper args={[90]} />
 
-          <OrbitControls enableRotate />
+          <OrbitControls enableRotate={mode == "3D"} />
 
-          <group rotation={mode === "2D" ? [2, 0, 0] : [0, 0, 0]}>
+          <group rotation={mode === "2D" ? [0, 0, 0] : [0, 0, 0]}>
             {mode === "2D" && polygonAreaShape && (
               <mesh>
                 <shapeGeometry args={[polygonAreaShape]} />
@@ -229,21 +307,45 @@ export default function VectorCalculator() {
       </div>
 
       {/* PANEL DE CONTROLES */}
-      <div className="absolute mt-4 w-full lg:w-96">
+      <div className="absolute mt-4 w-full lg:w-96 transition-all duration-300">
         <label className="font-semibold dark:text-zinc-300">
           Dimensiones:{" "}
         </label>
 
         <motion.select
-          whileHover={{ scale: 1.02 }}
           whileTap={{ scale: 0.95 }}
           value={mode}
           onChange={(e) => setMode(e.target.value as "2D" | "3D")}
-          className="mb-3 ml-2 border w-1/2 rounded-2xl px-2 dark:bg-zinc-900 dark:text-white dark:border-zinc-800 py-1.5 pr-8 pl-3 text-base"
+          className="mb-3 ml-2 border hover:border-indigo-600 w-1/2 bg-zinc-900  border-zinc-800"
         >
           <option value="3D">3D (x, y, z)</option>
           <option value="2D">2D (magnitud, ángulo)</option>
         </motion.select>
+        <AnimatePresence>
+          {helpOpen && (
+            <motion.div
+              key="help-panel"
+              initial={{ opacity: 0, y: -6 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -6 }}
+              className="mb-2 z-50"
+            >
+              <motion.div
+                initial={{ scale: 0.95, opacity: 0 }}
+                animate={{ scale: 1, opacity: 1 }}
+                exit={{ scale: 0.95, opacity: 0 }}
+                className="w-80 bg-white dark:bg-zinc-900 text-black dark:text-white p-4 rounded-2xl shadow-2xl"
+              >
+                <div className="space-y-3 text-sm">
+                  <div>
+                    <h3 className="font-semibold text-indigo-600">Selector</h3>
+                    <p>Seleccione el modo de visualisacion 3D o 2D</p>
+                  </div>
+                </div>
+              </motion.div>
+            </motion.div>
+          )}
+        </AnimatePresence>
 
         {/* INPUTS */}
         <AnimatePresence>
@@ -331,11 +433,63 @@ export default function VectorCalculator() {
           whileTap={{ scale: 0.9 }}
           whileHover={{ scale: 1.05 }}
           onClick={addVector}
-          className="bg-zinc-900 border border-zinc-800 hover:bg-indigo-950 hover:border-indigo-600 hover:shadow-lg hover:shadow-indigo-900 text-white px-3 py-2 rounded-2xl mt-2"
+          className="dark:bg-zinc-900 bg-zinc-400 border dark:border-zinc-800 hover:bg-indigo-900 dark:hover:bg-indigo-950 hover:border-indigo-600 hover:shadow-lg hover:shadow-indigo-900 text-white px-3 py-2 rounded-2xl mt-2"
         >
           Añadir vector
         </motion.button>
+        <AnimatePresence>
+          {helpOpen && (
+            <motion.div
+              key="help-panel"
+              initial={{ opacity: 0, y: -6 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -6 }}
+              className="mt-2 z-50"
+            >
+              <motion.div
+                initial={{ scale: 0.95, opacity: 0 }}
+                animate={{ scale: 1, opacity: 1 }}
+                exit={{ scale: 0.95, opacity: 0 }}
+                className="w-80 bg-white dark:bg-zinc-900 text-black dark:text-white p-4 rounded-2xl shadow-2xl"
+              >
+                <div className="space-y-3 text-sm">
+                  <div>
+                    <h3 className="font-semibold text-indigo-600">Añadir</h3>
+                    <p>Crea nuevos vectores y visualiselo en la gráfica</p>
+                  </div>
+                </div>
+              </motion.div>
+            </motion.div>
+          )}
+        </AnimatePresence>
       </div>
+
+      {/* PANEL DE AYUDA (panel anclado near top-right, ya no cubre toda la pantalla) */}
+      <AnimatePresence>
+        {helpOpen && (
+          <motion.div
+            key="help-panel"
+            initial={{ opacity: 0, y: -6 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -6 }}
+            className="absolute top-16 right-4 z-50"
+          >
+            <motion.div
+              initial={{ scale: 0.95, opacity: 0 }}
+              animate={{ scale: 1, opacity: 1 }}
+              exit={{ scale: 0.95, opacity: 0 }}
+              className="w-80 bg-white dark:bg-zinc-900 text-black dark:text-white p-4 rounded-2xl shadow-2xl"
+            >
+              <div className="space-y-3 text-sm">
+                <div>
+                  <h3 className="font-semibold text-indigo-600">Ayuda</h3>
+                  <p>Tutorial de uso</p>
+                </div>
+              </div>
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
     </motion.div>
   );
 }
