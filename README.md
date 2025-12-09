@@ -64,8 +64,7 @@ Este proyecto fue construido con:
 
 Desarrollado con ❤️ por @Royel2000
 
-### 📜 Licencia
-
-
 ## Tareas por hacer
-- [ ] Construir aplicación de escritorio
+- [x] Construir aplicación de escritorio.
+- [ ] Corregir errores al regresar la vista de 3D a 2D
+- [ ] Corregir posicion de los vectores en la vista 2D
