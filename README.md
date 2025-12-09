@@ -4,6 +4,7 @@
 
 <div align="center">
   <a href="#-instalación"><kbd>📦 Instalación</kbd></a> &nbsp;|&nbsp;
+  <a href="./Manual de uso.md"><kbd>📖 Manual de uso</kbd></a> &nbsp;|&nbsp;
   <a href="#-acerca-de"><kbd>📖 Acerca de</kbd></a> &nbsp;|&nbsp;
   <a href="#-tecnologías"><kbd>🛠️ Tecnologías</kbd></a>
 </div>
